@@ -3,27 +3,27 @@ import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime, time
 
-# 1. Connection Logic (Keep your existing Secrets setup)
+# 1. Connection Logic (Uses your existing Secrets)
 def get_sheet():
     scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
     creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
     client = gspread.authorize(creds)
+    # Ensure this matches your Google Sheet name exactly
     return client.open("Limitless_OEE_Database").sheet1
 
-# 2. Page Config & Branding
+# 2. Page Configuration
 st.set_page_config(page_title="Limitless OEE Portal", page_icon="⚙️", layout="centered")
 
 st.markdown("""
     <style>
     .stButton>button { width: 100%; border-radius: 10px; height: 3.5em; background-color: #004a99; color: white; font-weight: bold; }
-    .main { background-color: #f8f9fa; }
     </style>
     """, unsafe_allow_html=True)
 
 st.title("🏭 Limitless OEE Log")
-st.info("Electrical & Maintenance Department | Official Entry Portal")
+st.info("Electrical & Maintenance Department Portal")
 
-# 3. Real Machine List
+# 3. Your Real Machine List
 machines = [
     "SuperPack Sachet Filling", "Bosch Capsule filling", "Bohle Bin Blender", 
     "Quadro Mill 1", "Quadro Mill 2", "VG Fielder", "Oven Tray Dryer", 
@@ -31,24 +31,22 @@ machines = [
     "Automatic Labelling Machine", "All Fill Powder Filling", "Great Pack Sachet Filling", 
     "Fette Compression Machine 1", "Compact Russell Sieve", "ServoLift Lifter", 
     "Frewitt Mill", "Marchesini Blistering Machine", "Tablet Counting Machine", 
-    "Automatic Induction Sealing", "Capping Machine", "Klockner blistering Machine", 
+    "Autmatic Induction Sealing", "Capping Machine", "Klockner blistering Machine", 
     "Garvens CheckWeigher 1", "Garvens CheckWeigher 2", "Oscillating Frewitt Mill", 
     "Russel Sieve", "Fette Compression Machine 2", "Glatt Fluid Bed"
 ]
 
-# 4. Form Layout
+# 4. Input Form with Calendar View
 with st.form("oee_form", clear_on_submit=True):
     col1, col2 = st.columns(2)
-    
     with col1:
         asset = st.selectbox("Select Machine", sorted(machines))
         event = st.selectbox("Event Type", ["FAILURE", "IDLE", "PM", "SETUP"])
-    
     with col2:
         reason = st.text_input("Root Cause / Breakdown Detail")
         
     st.write("---")
-    st.subheader("🕒 Downtime Period (Calendar Selection)")
+    st.subheader("🕒 Downtime Period")
     
     c3, c4 = st.columns(2)
     with c3:
@@ -58,22 +56,23 @@ with st.form("oee_form", clear_on_submit=True):
         d_end = st.date_input("End Date", datetime.now())
         t_end = st.time_input("End Time", time(16, 0))
 
-    # Combine Date & Time for the Sheet
-    start_dt = datetime.combine(d_start, t_start).strftime("%Y-%m-%d %H:%M")
-    end_dt = datetime.combine(d_end, t_end).strftime("%Y-%m-%d %H:%M")
-
-    submit = st.form_submit.button("🚀 SUBMIT TO DATABASE")
+    # This line fixes the error in your screenshot
+    submit = st.form_submit_button("🚀 SYNC TO MAINTENANCE LOG")
 
 # 5. Submission Execution
 if submit:
     if not reason:
-        st.error("Please enter a reason for the downtime.")
+        st.error("Missing Data: Please enter a reason/root cause.")
     else:
         try:
+            start_dt = datetime.combine(d_start, t_start).strftime("%Y-%m-%d %H:%M")
+            end_dt = datetime.combine(d_end, t_end).strftime("%Y-%m-%d %H:%M")
+            
             sheet = get_sheet()
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             sheet.append_row([timestamp, asset, event, reason, start_dt, end_dt])
-            st.success(f"Successfully logged {asset} at {timestamp}")
+            
+            st.success(f"✅ Data for {asset} successfully synced to Google Sheets!")
             st.balloons()
         except Exception as e:
-            st.error(f"Error connecting to Google Sheets: {e}")
+            st.error(f"Sync failed. Check if Google Drive/Sheets API is enabled: {e}")
