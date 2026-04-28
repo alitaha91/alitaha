@@ -46,7 +46,7 @@ with st.form("oee_form", clear_on_submit=True):
         reason = st.text_input("Operation / Breakdown Detail")
         
     st.write("---")
-    st.subheader("🕒 Downtime Period")
+    st.subheader("🕒 Time Period")
     
     c3, c4 = st.columns(2)
     with c3:
