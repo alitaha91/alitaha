@@ -21,7 +21,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 st.title("🏭 Limitless OEE Log")
-st.info("Electrical & Maintenance Department Portal")
+st.info("Maintenance Department Portal")
 
 # 3. Your Real Machine List
 machines = [
@@ -41,9 +41,9 @@ with st.form("oee_form", clear_on_submit=True):
     col1, col2 = st.columns(2)
     with col1:
         asset = st.selectbox("Select Machine", sorted(machines))
-        event = st.selectbox("Event Type", ["FAILURE", "IDLE", "PM", "SETUP"])
+        event = st.selectbox("Event Type", ["FAILURE", "IDLE", "Operation", "SETUP"])
     with col2:
-        reason = st.text_input("Root Cause / Breakdown Detail")
+        reason = st.text_input("Operation / Breakdown Detail")
         
     st.write("---")
     st.subheader("🕒 Downtime Period")
