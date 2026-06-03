@@ -51,9 +51,11 @@ with st.form("oee_form", clear_on_submit=True):
     c3, c4 = st.columns(2)
     with c3:
         d_start = st.date_input("Start Date", datetime.now())
+        # Added step=60 for 1-minute increments
         t_start = st.time_input("Start Time", time(8, 0))
     with c4:
         d_end = st.date_input("End Date", datetime.now())
+        # Added step=60 for 1-minute increments
         t_end = st.time_input("End Time", time(16, 0))
 
     # This line fixes the error in your screenshot
