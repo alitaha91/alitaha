@@ -19,7 +19,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🏭 Limitless Reliability Tracking Log")
+st.title("🏭 Limitless Reliability Log")
 st.info("Engineering Maintenance Department")
 
 # 3. Machine & Station Configurations
