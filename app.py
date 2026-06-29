@@ -51,7 +51,7 @@ selected_station = "N/A"
 if event == "FAILURE":
     c_det1, c_det2 = st.columns(2)
     with c_det1:
-        reason = st.text_input("Details")
+        reason = st.text_input("Failure Details")
     with c_det2:
         if asset in station_mapping:
             selected_station = st.selectbox("Select Failed Station", station_mapping[asset])
@@ -59,7 +59,7 @@ if event == "FAILURE":
             selected_station = st.text_input("Specify Station / Assembly", value="General")
 else:
     # If not a failure, hide the station dropdown entirely and just show details
-    reason = st.text_input("Root Cause / Log Details")
+    reason = st.text_input("Log Details")
 
 # 5. Core Form for Datetime & Submit Process
 with st.form("oee_time_form", clear_on_submit=True):
