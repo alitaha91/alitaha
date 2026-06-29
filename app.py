@@ -8,7 +8,6 @@ def get_sheet():
     scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
     creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
     client = gspread.authorize(creds)
-    # Ensure this matches your Google Sheet name exactly
     return client.open("Limitless_OEE_Database").sheet1
 
 # 2. Page Configuration
@@ -21,15 +20,21 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 st.title("🏭 Limitless OEE Log")
-st.info("Maintenance Department Portal")
+st.info("Electrical & Maintenance Department Portal")
 
-# 3. Your Real Machine List
+# 3. Your Real Machine List & Dynamic Stations Mapping
 machines = [
     "SuperPack Sachet Filling", "Bosch Capsule filling", "Bohle Bin Blender", 
-    "VG Fielder", "Oven Tray Dryer", "Glatt Coater", "Countec Line", "Great Pack Sachet Filling", 
-    "Fette Compression Machine 1", "Marchesini Blistering Machine", 
-"Klockner blistering Machine", "Fette Compression Machine 2", "Glatt Fluid Bed"
+    "Quadro Mill 1", "Quadro Mill 2", "VG Fielder", "Oven Tray Dryer", 
+    "Glatt Coater", "Gea Coater Lifter", "Killian Compression Machine", 
+    "Automatic Labelling Machine", "All Fill Powder Filling", "Great Pack Sachet Filling", 
+    "Fette Compression Machine 1", "Compact Russell Sieve", "ServoLift Lifter", 
+    "Frewitt Mill", "Marchesini Blistering Machine", "Tablet Counting Machine", 
+    "Autmatic Induction Sealing", "Capping Machine", "Klockner blistering Machine", 
+    "Garvens CheckWeigher 1", "Garvens CheckWeigher 2", "Oscillating Frewitt Mill", 
+    "Russel Sieve", "Fette Compression Machine 2", "Glatt Fluid Bed"
 ]
+
 # Mapping machines to their respective functional stations
 station_mapping = {
     "Klockner blistering Machine": ["Reel Winder", "Forming", "Feeding", "Sealing", "Punching", "Waste Shredder", "Discharge"],
@@ -37,15 +42,17 @@ station_mapping = {
     "SuperPack Sachet Filling": ["Feeding Hopper", "Filling", "Vertical Sealing", "Horizontal Sealing", "Printing", "Cutting", "Discharge"],
     "Great Pack Sachet Filling": ["Feeding Hopper", "Filling", "Vertical Sealing", "Horizontal Sealing", "Printing", "Cutting", "Discharge"]  # Mapped for consistency
 }
+
 # 4. Input Form with Calendar View
 with st.form("oee_form", clear_on_submit=True):
     col1, col2 = st.columns(2)
     with col1:
         asset = st.selectbox("Select Machine", sorted(machines))
-        event = st.selectbox("Event Type", ["FAILURE", "IDLE", "Operation", "SETUP"])
+        event = st.selectbox("Event Type", ["FAILURE", "IDLE", "PM", "SETUP"])
     with col2:
-        reason = st.text_input("Details")
-  # Dynamic Station logic: Appears only when Event Type is FAILURE
+        reason = st.text_input("Root Cause / Breakdown Detail")
+        
+    # Dynamic Station logic: Appears only when Event Type is FAILURE
     selected_station = "N/A"  # Default if not a failure or not a mapped machine
     if event == "FAILURE":
         st.write("---")
@@ -56,9 +63,10 @@ with st.form("oee_form", clear_on_submit=True):
             selected_station = st.selectbox("Select Failed Station / Module", station_mapping[asset])
         else:
             # Fallback for other machines on your list
-            selected_station = st.text_input("Specify Station / Assembly (Optional)", value="General Mechanical")      
+            selected_station = st.text_input("Specify Station / Assembly (Optional)", value="General Mechanical")
+
     st.write("---")
-    st.subheader("🕒 Time Period")
+    st.subheader("🕒 Downtime Period")
     
     c3, c4 = st.columns(2)
     with c3:
@@ -68,7 +76,6 @@ with st.form("oee_form", clear_on_submit=True):
         d_end = st.date_input("End Date", datetime.now())
         t_end = st.time_input("End Time", time(16, 0), step=60)
 
-    # This line fixes the error in your screenshot
     submit = st.form_submit_button("🚀 SYNC TO MAINTENANCE LOG")
 
 # 5. Submission Execution
@@ -82,9 +89,11 @@ if submit:
             
             sheet = get_sheet()
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            sheet.append_row([timestamp, asset, event, reason, start_dt, end_dt])
             
-            st.success(f"✅ Data for {asset} successfully synced to Google Sheets!")
+            # Appending rows: Timestamp, Machine, Event, Reason, Start, End, Station Location
+            sheet.append_row([timestamp, asset, event, reason, start_dt, end_dt, selected_station])
+            
+            st.success(f"✅ Data for {asset} ({selected_station}) successfully synced to Google Sheets!")
             st.balloons()
         except Exception as e:
             st.error(f"Sync failed. Check if Google Drive/Sheets API is enabled: {e}")
