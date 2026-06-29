@@ -63,7 +63,7 @@ else:
 
 # 5. Core Form for Datetime & Submit Process
 with st.form("oee_time_form", clear_on_submit=True):
-    st.subheader("🕒 Downtime Period")
+    st.subheader("🕒 Time Period")
     c3, c4 = st.columns(2)
     with c3:
         d_start = st.date_input("Start Date", datetime.now())
