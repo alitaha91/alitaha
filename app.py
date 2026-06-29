@@ -30,7 +30,13 @@ machines = [
     "Fette Compression Machine 1", "Marchesini Blistering Machine", 
 "Klockner blistering Machine", "Fette Compression Machine 2", "Glatt Fluid Bed"
 ]
-
+# Mapping machines to their respective functional stations
+station_mapping = {
+    "Klockner blistering Machine": ["Reel Winder", "Forming", "Feeding", "Sealing", "Punching", "Waste Shredder", "Discharge"],
+    "Marchesini Blistering Machine": ["Reel Winder", "Forming", "Feeding", "Sealing", "Punching", "Waste Shredder", "Discharge"],
+    "SuperPack Sachet Filling": ["Feeding Hopper", "Filling", "Vertical Sealing", "Horizontal Sealing", "Printing", "Cutting", "Discharge"],
+    "Great Pack Sachet Filling": ["Feeding Hopper", "Filling", "Vertical Sealing", "Horizontal Sealing", "Printing", "Cutting", "Discharge"]  # Mapped for consistency
+}
 # 4. Input Form with Calendar View
 with st.form("oee_form", clear_on_submit=True):
     col1, col2 = st.columns(2)
@@ -39,7 +45,18 @@ with st.form("oee_form", clear_on_submit=True):
         event = st.selectbox("Event Type", ["FAILURE", "IDLE", "Operation", "SETUP"])
     with col2:
         reason = st.text_input("Details")
+  # Dynamic Station logic: Appears only when Event Type is FAILURE
+    selected_station = "N/A"  # Default if not a failure or not a mapped machine
+    if event == "FAILURE":
+        st.write("---")
+        st.subheader("🛠️ Failure Location Tracking")
         
+        # Check if the selected machine has specific stations defined
+        if asset in station_mapping:
+            selected_station = st.selectbox("Select Failed Station / Module", station_mapping[asset])
+        else:
+            # Fallback for other machines on your list
+            selected_station = st.text_input("Specify Station / Assembly (Optional)", value="General Mechanical")      
     st.write("---")
     st.subheader("🕒 Time Period")
     
