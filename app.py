@@ -19,7 +19,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🏭 Limitless Tracking Log")
+st.title("🏭 Limitless Reliability Tracking Log")
 st.info("Engineering Maintenance Department")
 
 # 3. Machine & Station Configurations
@@ -51,7 +51,7 @@ selected_station = "N/A"
 if event == "FAILURE":
     c_det1, c_det2 = st.columns(2)
     with c_det1:
-        reason = st.text_input("Root Cause / Breakdown Detail")
+        reason = st.text_input("Details")
     with c_det2:
         if asset in station_mapping:
             selected_station = st.selectbox("Select Failed Station", station_mapping[asset])
