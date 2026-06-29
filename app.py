@@ -56,7 +56,7 @@ if event == "FAILURE":
         if asset in station_mapping:
             selected_station = st.selectbox("Select Failed Station", station_mapping[asset])
         else:
-            selected_station = st.text_input("Specify Station / Assembly", value="General Mechanical")
+            selected_station = st.text_input("Specify Station / Assembly", value="General")
 else:
     # If not a failure, hide the station dropdown entirely and just show details
     reason = st.text_input("Root Cause / Log Details")
