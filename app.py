@@ -26,14 +26,9 @@ st.info("Maintenance Department Portal")
 # 3. Your Real Machine List
 machines = [
     "SuperPack Sachet Filling", "Bosch Capsule filling", "Bohle Bin Blender", 
-    "Quadro Mill 1", "Quadro Mill 2", "VG Fielder", "Oven Tray Dryer", 
-    "Glatt Coater", "Gea Coater Lifter", "Killian Compression Machine", 
-    "Automatic Labelling Machine", "All Fill Powder Filling", "Great Pack Sachet Filling", 
-    "Fette Compression Machine 1", "Compact Russell Sieve", "ServoLift Lifter", 
-    "Frewitt Mill", "Marchesini Blistering Machine", "Tablet Counting Machine", 
-    "Autmatic Induction Sealing", "Capping Machine", "Klockner blistering Machine", 
-    "Garvens CheckWeigher 1", "Garvens CheckWeigher 2", "Oscillating Frewitt Mill", 
-    "Russel Sieve", "Fette Compression Machine 2", "Glatt Fluid Bed"
+    "VG Fielder", "Oven Tray Dryer", "Glatt Coater", "Countec Line", Great Pack Sachet Filling", 
+    "Fette Compression Machine 1", "Marchesini Blistering Machine", 
+"Klockner blistering Machine", "Fette Compression Machine 2", "Glatt Fluid Bed"
 ]
 
 # 4. Input Form with Calendar View
@@ -43,7 +38,7 @@ with st.form("oee_form", clear_on_submit=True):
         asset = st.selectbox("Select Machine", sorted(machines))
         event = st.selectbox("Event Type", ["FAILURE", "IDLE", "Operation", "SETUP"])
     with col2:
-        reason = st.text_input("Operation / Breakdown Detail")
+        reason = st.text_input("Details")
         
     st.write("---")
     st.subheader("🕒 Time Period")
