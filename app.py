@@ -11,7 +11,7 @@ def get_sheet():
     return client.open("Limitless_OEE_Database").sheet1
 
 # 2. Page Configuration
-st.set_page_config(page_title="Limitless OEE Portal", page_icon="⚙️", layout="centered")
+st.set_page_config(page_title="Limitless Reliability Portal", page_icon="⚙️", layout="centered")
 
 st.markdown("""
     <style>
@@ -19,20 +19,17 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🏭 Limitless OEE Log")
-st.info("Electrical & Maintenance Department Portal")
+st.title("🏭 Limitless Tracking Log")
+st.info("Engineering Maintenance Department")
 
 # 3. Machine & Station Configurations
 machines = [
     "SuperPack Sachet Filling", "Bosch Capsule filling", "Bohle Bin Blender", 
-    "Quadro Mill 1", "Quadro Mill 2", "VG Fielder", "Oven Tray Dryer", 
-    "Glatt Coater", "Gea Coater Lifter", "Killian Compression Machine", 
-    "Automatic Labelling Machine", "All Fill Powder Filling", "Great Pack Sachet Filling", 
-    "Fette Compression Machine 1", "Compact Russell Sieve", "ServoLift Lifter", 
-    "Frewitt Mill", "Marchesini Blistering Machine", "Tablet Counting Machine", 
-    "Autmatic Induction Sealing", "Capping Machine", "Klockner blistering Machine", 
-    "Garvens CheckWeigher 1", "Garvens CheckWeigher 2", "Oscillating Frewitt Mill", 
-    "Russel Sieve", "Fette Compression Machine 2", "Glatt Fluid Bed"
+    "VG Fielder", "Oven Tray Dryer", 
+    "Glatt Coater", "Great Pack Sachet Filling", 
+    "Fette Compression Machine 1", "Marchesini Blistering Machine", "Countec Line", 
+    "Klockner blistering Machine", 
+    "Fette Compression Machine 2", "Glatt Fluid Bed"
 ]
 
 station_mapping = {
@@ -47,7 +44,7 @@ col1, col2 = st.columns(2)
 with col1:
     asset = st.selectbox("Select Machine", sorted(machines))
 with col2:
-    event = st.selectbox("Event Type", ["FAILURE", "IDLE", "PM", "SETUP"])
+    event = st.selectbox("Event Type", ["FAILURE", "IDLE", "In-Operation", "SETUP"])
 
 # Manage conditional visibility next to details
 selected_station = "N/A"
