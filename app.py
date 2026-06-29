@@ -26,7 +26,7 @@ st.info("Maintenance Department Portal")
 # 3. Your Real Machine List
 machines = [
     "SuperPack Sachet Filling", "Bosch Capsule filling", "Bohle Bin Blender", 
-    "VG Fielder", "Oven Tray Dryer", "Glatt Coater", "Countec Line", Great Pack Sachet Filling", 
+    "VG Fielder", "Oven Tray Dryer", "Glatt Coater", "Countec Line", "Great Pack Sachet Filling", 
     "Fette Compression Machine 1", "Marchesini Blistering Machine", 
 "Klockner blistering Machine", "Fette Compression Machine 2", "Glatt Fluid Bed"
 ]
