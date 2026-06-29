@@ -22,7 +22,7 @@ st.markdown("""
 st.title("🏭 Limitless OEE Log")
 st.info("Electrical & Maintenance Department Portal")
 
-# 3. Your Real Machine List & Dynamic Stations Mapping
+# 3. Machine & Station Configurations
 machines = [
     "SuperPack Sachet Filling", "Bosch Capsule filling", "Bohle Bin Blender", 
     "Quadro Mill 1", "Quadro Mill 2", "VG Fielder", "Oven Tray Dryer", 
@@ -35,39 +35,38 @@ machines = [
     "Russel Sieve", "Fette Compression Machine 2", "Glatt Fluid Bed"
 ]
 
-# Mapping machines to their respective functional stations
 station_mapping = {
     "Klockner blistering Machine": ["Reel Winder", "Forming", "Feeding", "Sealing", "Punching", "Waste Shredder", "Discharge"],
     "Marchesini Blistering Machine": ["Reel Winder", "Forming", "Feeding", "Sealing", "Punching", "Waste Shredder", "Discharge"],
     "SuperPack Sachet Filling": ["Feeding Hopper", "Filling", "Vertical Sealing", "Horizontal Sealing", "Printing", "Cutting", "Discharge"],
-    "Great Pack Sachet Filling": ["Feeding Hopper", "Filling", "Vertical Sealing", "Horizontal Sealing", "Printing", "Cutting", "Discharge"]  # Mapped for consistency
+    "Great Pack Sachet Filling": ["Feeding Hopper", "Filling", "Vertical Sealing", "Horizontal Sealing", "Printing", "Cutting", "Discharge"]
 }
 
-# 4. Input Form with Calendar View
-with st.form("oee_form", clear_on_submit=True):
-    col1, col2 = st.columns(2)
-    with col1:
-        asset = st.selectbox("Select Machine", sorted(machines))
-        event = st.selectbox("Event Type", ["FAILURE", "IDLE", "PM", "SETUP"])
-    with col2:
-        reason = st.text_input("Root Cause / Breakdown Detail")
-        
-    # Dynamic Station logic: Appears only when Event Type is FAILURE
-    selected_station = "N/A"  # Default if not a failure or not a mapped machine
-    if event == "FAILURE":
-        st.write("---")
-        st.subheader("🛠️ Failure Location Tracking")
-        
-        # Check if the selected machine has specific stations defined
-        if asset in station_mapping:
-            selected_station = st.selectbox("Select Failed Station / Module", station_mapping[asset])
-        else:
-            # Fallback for other machines on your list
-            selected_station = st.text_input("Specify Station / Assembly (Optional)", value="General Mechanical")
+# 4. Interactive Selectors (Outside form context to ensure reactive state changes)
+col1, col2 = st.columns(2)
+with col1:
+    asset = st.selectbox("Select Machine", sorted(machines))
+with col2:
+    event = st.selectbox("Event Type", ["FAILURE", "IDLE", "PM", "SETUP"])
 
-    st.write("---")
+# Manage conditional visibility next to details
+selected_station = "N/A"
+if event == "FAILURE":
+    c_det1, c_det2 = st.columns(2)
+    with c_det1:
+        reason = st.text_input("Root Cause / Breakdown Detail")
+    with c_det2:
+        if asset in station_mapping:
+            selected_station = st.selectbox("Select Failed Station", station_mapping[asset])
+        else:
+            selected_station = st.text_input("Specify Station / Assembly", value="General Mechanical")
+else:
+    # If not a failure, hide the station dropdown entirely and just show details
+    reason = st.text_input("Root Cause / Log Details")
+
+# 5. Core Form for Datetime & Submit Process
+with st.form("oee_time_form", clear_on_submit=True):
     st.subheader("🕒 Downtime Period")
-    
     c3, c4 = st.columns(2)
     with c3:
         d_start = st.date_input("Start Date", datetime.now())
@@ -78,10 +77,10 @@ with st.form("oee_form", clear_on_submit=True):
 
     submit = st.form_submit_button("🚀 SYNC TO MAINTENANCE LOG")
 
-# 5. Submission Execution
+# 6. Submission Execution
 if submit:
     if not reason:
-        st.error("Missing Data: Please enter a reason/root cause.")
+        st.error("Missing Data: Please enter a details/root cause description.")
     else:
         try:
             start_dt = datetime.combine(d_start, t_start).strftime("%Y-%m-%d %H:%M")
@@ -90,10 +89,10 @@ if submit:
             sheet = get_sheet()
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             
-            # Appending rows: Timestamp, Machine, Event, Reason, Start, End, Station Location
+            # Formats logged row clearly in Google Sheets
             sheet.append_row([timestamp, asset, event, reason, start_dt, end_dt, selected_station])
             
-            st.success(f"✅ Data for {asset} ({selected_station}) successfully synced to Google Sheets!")
+            st.success(f"✅ Data for {asset} successfully logged!")
             st.balloons()
         except Exception as e:
-            st.error(f"Sync failed. Check if Google Drive/Sheets API is enabled: {e}")
+            st.error(f"Sync failed. Check API connection details: {e}")
